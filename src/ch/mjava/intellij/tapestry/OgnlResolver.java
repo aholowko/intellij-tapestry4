@@ -61,7 +61,7 @@ public class OgnlResolver extends AnAction
                         PsiMethod[] methods = clazz.getAllMethods();
                         for(PsiMethod method : methods)
                         {
-                            if(method.getName().toLowerCase().contains(fieldName.toLowerCase()))
+                            if(methodNameMatches(fieldName, method))
                             {
                                 allFields.add(method);
                             }
@@ -81,5 +81,16 @@ public class OgnlResolver extends AnAction
 
 
         }
+    }
+
+    private boolean methodNameMatches(String fieldName, PsiMethod method)
+    {
+        String lowerFieldName = fieldName.toLowerCase()
+                .replaceAll("\\(", "")
+                .replaceAll("\\)", "")
+                .replaceAll("!", "")
+                ;
+        String methodName = method.getName().toLowerCase();
+        return methodName.contains(lowerFieldName);
     }
 }
