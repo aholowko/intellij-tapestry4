@@ -25,7 +25,7 @@ public class TapestrySwitcher extends AnAction
 
         if(files.isEmpty())
         {
-            PluginHelper.showErrorBalloonWith(e, "No partner file found");
+            PluginHelper.showErrorBalloonWith("No partner file found", e.getDataContext());
         }
         else
         {

@@ -11,6 +11,8 @@ import com.intellij.codeInsight.daemon.LineMarkerProvider;
 import com.intellij.codeInsight.daemon.impl.GutterIconTooltipHelper;
 import com.intellij.codeInsight.daemon.impl.PsiElementListNavigator;
 import com.intellij.ide.util.DefaultPsiElementCellRenderer;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.psi.PsiElement;
@@ -72,6 +74,12 @@ public class TapestryMarkupLineMarkerProvider implements LineMarkerProvider
                     @Override
                     public void navigate(MouseEvent mouseEvent, PsiElement psiElement)
                     {
+                        if(links.length < 1)
+                        {
+                            DataContext tc = SimpleDataContext.getProjectContext(psiElement.getProject());
+                            PluginHelper.showErrorBalloonWith("Could not found associated code. " +
+                                    "Ognl expression was too hard for me", tc);
+                        }
                         PsiElementListNavigator.openTargets(mouseEvent, links, "Select your target", "",
                                 new DefaultPsiElementCellRenderer());
                     }

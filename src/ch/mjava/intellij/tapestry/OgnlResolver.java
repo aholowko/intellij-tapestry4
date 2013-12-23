@@ -9,7 +9,6 @@ import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.search.PsiShortNamesCache;
 
@@ -31,7 +30,7 @@ public class OgnlResolver extends AnAction
             String name = psiFile.getName();
             Editor editor = e.getData(PlatformDataKeys.EDITOR);
             if (editor == null) {
-                PluginHelper.showErrorBalloonWith(e, "no internal editor found for " + name);
+                PluginHelper.showErrorBalloonWith("no internal editor found for " + name, e.getDataContext());
                 return;
             }
             int offset = editor.getCaretModel().getOffset();
