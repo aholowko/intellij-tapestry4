@@ -41,8 +41,6 @@ public class TapestryMarkupLineMarkerProvider implements LineMarkerProvider
         if(element instanceof XmlAttribute && ((XmlAttribute) element).getValue().startsWith("ognl"))
         {
             XmlAttribute attribute = (XmlAttribute) element;
-            System.out.println("attribute.getName() = " + attribute.getName());
-            System.out.println("attribute.getValue() = " + attribute.getValue());
             String methodName = OgnlResolver.cleanOgnlExpression(attribute.getValue());
             List<PsiMethod> methods = OgnlResolver.getMethodsCandidatesFrom(element.getContainingFile(), methodName);
             List<NavigatablePsiElement> linksTo = new ArrayList<NavigatablePsiElement>();

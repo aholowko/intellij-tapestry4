@@ -5,13 +5,17 @@
   <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <small>most HTML tags may be used</small>
+      <h1>Tapestry 4 Support</h1>
+
+      Very simple plugin that provides some basic tapestry support.<br />
+      It is intended to support development for tapestry 4 projects.
+
       ]]></description>
 
   <change-notes><![CDATA[
-      Add change notes here.<br>
-      <small>most HTML tags may be used</small>
+    - Switching between between html components and it's java counterparts <i>control alt shift J</i>
+    - Allows to navigate from a ognl expression to its java counterpart <i>control alt shift K</i>
+    - Add LineMarker in html site allowing to switch to java counterpart.
       ]]>
   </change-notes>
 
