@@ -49,6 +49,8 @@
   </actions>
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
+
+    <codeInsight.lineMarkerProvider language="HTML"
+                                    implementationClass="ch.mjava.intellij.tapestry.codeInsight.TapestryMarkupLineMarkerProvider"/>
   </extensions>
 </idea-plugin>
