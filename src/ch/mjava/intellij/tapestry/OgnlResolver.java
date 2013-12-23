@@ -8,16 +8,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.search.PsiShortNamesCache;
-import com.intellij.psi.util.PsiTreeUtil;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,33 +37,12 @@ public class OgnlResolver extends AnAction
             int offset = editor.getCaretModel().getOffset();
             PsiElement elementAt = psiFile.findElementAt(offset);
             String text = elementAt.getText();
-            System.out.println("text = " + text); // = listener:addShippingAddress
 
             if(text.contains("ognl:") || text.contains("listener:"))
             {
-                List<PsiFile> javaCandidates = new TapestrySwitcher().getPartnerFiles(e);
-                List<PsiMethod> allFields = new ArrayList<PsiMethod>();
                 String fieldName = text.replace("ognl:", "").replace("listener:", "");
-                Project project = e.getProject();
-                for(PsiFile javaCandidate : javaCandidates)
-                {
-
-                    PsiClass[] classes = PsiShortNamesCache.getInstance(project).getClassesByName(javaCandidate.getVirtualFile().getNameWithoutExtension(), javaCandidate.getResolveScope());
-
-                    if(classes != null && classes.length > 0)
-                    {
-                        PsiClass clazz = classes[0];
-                        PsiMethod[] methods = clazz.getAllMethods();
-                        for(PsiMethod method : methods)
-                        {
-                            if(methodNameMatches(fieldName, method))
-                            {
-                                allFields.add(method);
-                            }
-                        }
-                    }
-                }
-                FieldChoiceDialog dlg = new FieldChoiceDialog(project, allFields.toArray(new PsiMethod[allFields.size()]));
+                List<PsiMethod> allFields = getMethodsCandidatesFrom(psiFile, fieldName);
+                FieldChoiceDialog dlg = new FieldChoiceDialog(psiFile.getProject(), allFields.toArray(new PsiMethod[allFields.size()]));
                 dlg.show();
                 if (dlg.isOK()) {
                     List<PsiMethod> methods = dlg.getFields();
@@ -83,7 +57,39 @@ public class OgnlResolver extends AnAction
         }
     }
 
-    private boolean methodNameMatches(String fieldName, PsiMethod method)
+    public static String cleanOgnlExpression(String ognlExpression)
+    {
+        return ognlExpression.replace("ognl:", "").replace("listener:", "")
+                .replace("(", "")
+                .replace(")","")
+                .replace("!","");
+    }
+    public static List<PsiMethod> getMethodsCandidatesFrom(PsiFile psiFile, String fieldName)
+    {
+        List<PsiFile> javaCandidates = new TapestrySwitcher().getPartnerFiles(psiFile);
+        List<PsiMethod> allFields = new ArrayList<PsiMethod>();
+        for(PsiFile javaCandidate : javaCandidates)
+        {
+
+            PsiClass[] classes = PsiShortNamesCache.getInstance(psiFile.getProject()).getClassesByName(javaCandidate.getVirtualFile().getNameWithoutExtension(), javaCandidate.getResolveScope());
+
+            if(classes != null && classes.length > 0)
+            {
+                PsiClass clazz = classes[0];
+                PsiMethod[] methods = clazz.getAllMethods();
+                for(PsiMethod method : methods)
+                {
+                    if(methodNameMatches(fieldName, method))
+                    {
+                        allFields.add(method);
+                    }
+                }
+            }
+        }
+        return allFields;
+    }
+
+    public static boolean methodNameMatches(String fieldName, PsiMethod method)
     {
         String lowerFieldName = fieldName.toLowerCase()
                 .replaceAll("\\(", "")

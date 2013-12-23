@@ -3,6 +3,7 @@ package ch.mjava.intellij.tapestry;
 import ch.mjava.intellij.PluginHelper;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 
@@ -20,7 +21,7 @@ public class TapestrySwitcher extends AnAction
 {
     public void actionPerformed(AnActionEvent e)
     {
-        List<PsiFile> files = getPartnerFiles(e);
+        List<PsiFile> files = getPartnerFiles(e.getData(LangDataKeys.PSI_FILE));
 
         if(files.isEmpty())
         {
@@ -36,9 +37,8 @@ public class TapestrySwitcher extends AnAction
         }
     }
 
-    public List<PsiFile> getPartnerFiles(AnActionEvent e)
+    public List<PsiFile> getPartnerFiles(PsiFile psiFile)
     {
-        PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
         String name = psiFile.getName();
         String partnerFile;
         if(name.endsWith("java"))
@@ -46,13 +46,13 @@ public class TapestrySwitcher extends AnAction
         else
             partnerFile = name.replace(".html", ".java");
 
-        ArrayList<PsiFile> files = PluginHelper.searchFiles(e, partnerFile);
+        ArrayList<PsiFile> files = PluginHelper.searchFiles(partnerFile, psiFile.getProject());
         ArrayList<PsiFile> result = new ArrayList<PsiFile>();
 
 
         if(files.isEmpty() && name.endsWith("html"))
         {
-            result.addAll(getCandidatesFromJWCFiles(e, name));
+            result.addAll(getCandidatesFromJWCFiles(name, psiFile.getProject()));
         }
         else
         {
@@ -64,15 +64,13 @@ public class TapestrySwitcher extends AnAction
                 }
             }
         }
-
-
         return Collections.unmodifiableList(result);
     }
 
-    private List<PsiFile> getCandidatesFromJWCFiles(AnActionEvent e, String name)
+    private List<PsiFile> getCandidatesFromJWCFiles(String name, Project project)
     {
         String jwcFileName = name.replace(".html", ".jwc");
-        ArrayList<PsiFile> psiFiles = PluginHelper.searchFiles(e, jwcFileName);
+        ArrayList<PsiFile> psiFiles = PluginHelper.searchFiles(jwcFileName, project);
         if(!psiFiles.isEmpty())
         {
             // looking for files inside jwc files
@@ -87,7 +85,7 @@ public class TapestrySwitcher extends AnAction
                 {
                     String fqClassName = matcher.group(1);
                     String javaName = fqClassName.substring(fqClassName.lastIndexOf(".") + 1);
-                    ArrayList<PsiFile> javaCandidates = PluginHelper.searchFiles(e, javaName + ".java");
+                    ArrayList<PsiFile> javaCandidates = PluginHelper.searchFiles(javaName + ".java", project);
                     return javaCandidates;
                 }
             }
