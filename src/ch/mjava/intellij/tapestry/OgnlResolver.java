@@ -75,13 +75,15 @@ public class OgnlResolver extends AnAction
 
             if(classes != null && classes.length > 0)
             {
-                PsiClass clazz = classes[0];
-                PsiMethod[] methods = clazz.getAllMethods();
-                for(PsiMethod method : methods)
+                for(PsiClass aClass : classes)
                 {
-                    if(methodNameMatches(fieldName, method))
+                    PsiMethod[] methods = aClass.getAllMethods();
+                    for(PsiMethod method : methods)
                     {
-                        allFields.add(method);
+                        if(methodNameMatches(fieldName, method))
+                        {
+                            allFields.add(method);
+                        }
                     }
                 }
             }
