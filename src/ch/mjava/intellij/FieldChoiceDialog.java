@@ -31,6 +31,7 @@ public class FieldChoiceDialog extends DialogWrapper
         myFields = new CollectionListModel<PsiMethod>(allFields);
         fieldList = new JList(myFields);
         fieldList.setCellRenderer(new DefaultPsiElementCellRenderer());
+        fieldList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ToolbarDecorator decorator = ToolbarDecorator.createDecorator(fieldList);
         decorator.disableAddAction();
         decorator.disableUpDownActions();
