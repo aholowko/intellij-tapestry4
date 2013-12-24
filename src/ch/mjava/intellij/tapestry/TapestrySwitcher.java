@@ -37,7 +37,7 @@ public class TapestrySwitcher extends AnAction
         }
     }
 
-    public List<PsiFile> getPartnerFiles(PsiFile psiFile)
+    public static List<PsiFile> getPartnerFiles(PsiFile psiFile)
     {
         String name = psiFile.getName();
         String partnerFile;
@@ -67,7 +67,7 @@ public class TapestrySwitcher extends AnAction
         return Collections.unmodifiableList(result);
     }
 
-    private List<PsiFile> getCandidatesFromJWCFiles(String name, Project project)
+    private static List<PsiFile> getCandidatesFromJWCFiles(String name, Project project)
     {
         String jwcFileName = name.replace(".html", ".jwc");
         ArrayList<PsiFile> psiFiles = PluginHelper.searchFiles(jwcFileName, project);
@@ -97,7 +97,7 @@ public class TapestrySwitcher extends AnAction
         return Collections.emptyList();
     }
 
-    private boolean isAPartnerCandidate(PsiFile psiFile, PsiFile file)
+    private static boolean isAPartnerCandidate(PsiFile psiFile, PsiFile file)
     {
         return file.getParent().getName().equals(psiFile.getParent().getName());
     }

@@ -89,6 +89,4 @@ public class TapestryMarkupLineMarkerProvider implements LineMarkerProvider
     @Override
     public void collectSlowLineMarkers(@NotNull List<PsiElement> psiElements, @NotNull Collection<LineMarkerInfo> lineMarkerInfos) { }
 
-
-    private LineMarkerInfo createNavigableLineMarkerWith(){return null;}
 }

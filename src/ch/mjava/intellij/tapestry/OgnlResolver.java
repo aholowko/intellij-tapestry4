@@ -65,7 +65,7 @@ public class OgnlResolver extends AnAction
     }
     public static List<PsiMethod> getMethodsCandidatesFrom(PsiFile psiFile, String fieldName)
     {
-        List<PsiFile> javaCandidates = new TapestrySwitcher().getPartnerFiles(psiFile);
+        List<PsiFile> javaCandidates = TapestrySwitcher.getPartnerFiles(psiFile);
         List<PsiMethod> allFields = new ArrayList<PsiMethod>();
         for(PsiFile javaCandidate : javaCandidates)
         {
