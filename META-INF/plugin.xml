@@ -1,8 +1,8 @@
 <idea-plugin version="2">
-  <id>com.yourcompany.unique.plugin.id</id>
-  <name>Plugin display name here</name>
-  <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <id>ch.mjava.intellij.tapestry.4</id>
+  <name>Tapestry 4.1 Support</name>
+  <version>0.1.0</version>
+  <vendor email="intellij.tapestry4@gmail.com" url="http://www.mjava.ch">http://www.mjava.ch</vendor>
 
   <description><![CDATA[
       <h1>Tapestry 4 Support</h1>
@@ -37,14 +37,13 @@
   </project-components>
 
   <actions>
-    <!-- Add your actions here -->
     <action id="switcher" class="ch.mjava.intellij.tapestry.TapestrySwitcher" text="Switch Tapestry Html-Java Files"
             description="Switch Between Html Pages/Components and their Java-CounterParts">
       <add-to-group group-id="ToolsMenu" anchor="last"/>
       <keyboard-shortcut first-keystroke="control alt shift J" keymap="$default"/>
     </action>
 
-    <action class="ch.mjava.intellij.tapestry.OgnlResolver" id="ognlResolver" text="got to refered ognl action"
+    <action id="ognlResolver" class="ch.mjava.intellij.tapestry.OgnlResolver" text="got to refered ognl action"
             description="Switches to implemented ognl call">
       <add-to-group group-id="ToolsMenu" anchor="last"/>
       <keyboard-shortcut first-keystroke="control alt shift K" keymap="$default"/>
