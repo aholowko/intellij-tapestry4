@@ -15,6 +15,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Copyright 2013 http://www.mjava.ch
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
  * @author knm
  */
 public class TapestrySwitcher extends AnAction
@@ -26,8 +40,7 @@ public class TapestrySwitcher extends AnAction
         if(files.isEmpty())
         {
             PluginHelper.showErrorBalloonWith("No partner file found", e.getDataContext());
-        }
-        else
+        } else
         {
             FileEditorManager fileEditorManager = FileEditorManager.getInstance(e.getProject());
             for(PsiFile file : files)
@@ -53,8 +66,7 @@ public class TapestrySwitcher extends AnAction
         if(files.isEmpty() && name.endsWith("html"))
         {
             result.addAll(getCandidatesFromJWCFiles(name, psiFile.getProject()));
-        }
-        else
+        } else
         {
             for(PsiFile file : files)
             {
