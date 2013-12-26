@@ -3,6 +3,7 @@ package ch.mjava.intellij.tapestry;
 import ch.mjava.intellij.PluginHelper;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -53,13 +54,13 @@ public class TapestrySwitcher extends AnAction
     public static List<PsiFile> getPartnerFiles(PsiFile psiFile)
     {
         String name = psiFile.getName();
-        String partnerFile;
-        if(name.endsWith("java"))
-            partnerFile = name.replace(".java", ".html");
+        String partnerFileName;
+        if(psiFile.getFileType().equals(StdFileTypes.JAVA))
+            partnerFileName = name.replace(".java", ".html");
         else
-            partnerFile = name.replace(".html", ".java");
+            partnerFileName = name.replace(".html", ".java");
 
-        ArrayList<PsiFile> files = PluginHelper.searchFiles(partnerFile, psiFile.getProject());
+        ArrayList<PsiFile> files = PluginHelper.searchFiles(partnerFileName, psiFile.getProject());
         ArrayList<PsiFile> result = new ArrayList<PsiFile>();
 
 
