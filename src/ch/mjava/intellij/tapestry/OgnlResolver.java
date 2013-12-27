@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.search.PsiShortNamesCache;
 
@@ -54,8 +55,8 @@ public class OgnlResolver extends AnAction
 
             if(text.contains("ognl:") || text.contains("listener:"))
             {
-                String fieldName = text.replace("ognl:", "").replace("listener:", "");
-                List<PsiMethod> allFields = getMethodsCandidatesFrom(psiFile, fieldName);
+                String ognlExpression = text.replace("ognl:", "").replace("listener:", "");
+                List<PsiMethod> allFields = getMethodsCandidatesFrom(psiFile, ognlExpression);
                 FieldChoiceDialog dlg = new FieldChoiceDialog(psiFile.getProject(), allFields.toArray(new PsiMethod[allFields.size()]));
                 dlg.show();
                 if(dlg.isOK())
@@ -80,23 +81,24 @@ public class OgnlResolver extends AnAction
                 .replace("!", "");
     }
 
-    public static List<PsiMethod> getMethodsCandidatesFrom(PsiFile psiFile, String fieldName)
+    public static List<PsiMethod> getMethodsCandidatesFrom(PsiFile psiFile, String ognlExpression)
     {
         List<PsiFile> javaCandidates = TapestrySwitcher.getPartnerFiles(psiFile);
         List<PsiMethod> allFields = new ArrayList<PsiMethod>();
+        Project project = psiFile.getProject();
+        PsiShortNamesCache psiShortNamesCache = PsiShortNamesCache.getInstance(project);
         for(PsiFile javaCandidate : javaCandidates)
         {
+            PsiClass[] classes = psiShortNamesCache.getClassesByName(javaCandidate.getVirtualFile().getNameWithoutExtension(), javaCandidate.getResolveScope());
 
-            PsiClass[] classes = PsiShortNamesCache.getInstance(psiFile.getProject()).getClassesByName(javaCandidate.getVirtualFile().getNameWithoutExtension(), javaCandidate.getResolveScope());
-
-            if(classes != null && classes.length > 0)
+            if(classes.length > 0)
             {
                 for(PsiClass aClass : classes)
                 {
                     PsiMethod[] methods = aClass.getAllMethods();
                     for(PsiMethod method : methods)
                     {
-                        if(methodNameMatches(fieldName, method))
+                        if(methodNameMatches(ognlExpression, method))
                         {
                             allFields.add(method);
                         }
@@ -109,6 +111,7 @@ public class OgnlResolver extends AnAction
 
     public static boolean methodNameMatches(String fieldName, PsiMethod method)
     {
+        // TODO: we could use a proper ognl parsing here!
         String lowerFieldName = fieldName.toLowerCase()
                 .replaceAll("\\(", "")
                 .replaceAll("\\)", "")
