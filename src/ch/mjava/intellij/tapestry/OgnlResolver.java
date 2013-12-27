@@ -55,7 +55,7 @@ public class OgnlResolver extends AnAction
 
             if(text.contains("ognl:") || text.contains("listener:"))
             {
-                String ognlExpression = text.replace("ognl:", "").replace("listener:", "");
+                String ognlExpression = cleanOgnlExpression(text);
                 List<PsiMethod> allFields = getMethodsCandidatesFrom(psiFile, ognlExpression);
                 FieldChoiceDialog dlg = new FieldChoiceDialog(psiFile.getProject(), allFields.toArray(new PsiMethod[allFields.size()]));
                 dlg.show();

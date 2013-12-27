@@ -16,6 +16,7 @@ To install the latest release (and get automatic updates), install this plugin u
 ## TODO and Wishlist
 
 * Proper OGNL parsing
+* Use IDEAs stub-index to include the *.jwc files for partner-file search
 * Autocompletion on ognl expressions in the template
 * LineMarker References from java-code to its usages in templates
 
