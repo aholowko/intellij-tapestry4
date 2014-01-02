@@ -53,6 +53,8 @@
 
   <extensions defaultExtensionNs="com.intellij">
 
+    <completion.contributor language="HTML" implementationClass="ch.mjava.intellij.tapestry.completion.PropertyCompletionContributor"/>
+
     <codeInsight.lineMarkerProvider language="HTML"
                                     implementationClass="ch.mjava.intellij.tapestry.codeInsight.TapestryMarkupLineMarkerProvider"/>
   </extensions>
