@@ -18,7 +18,7 @@ import org.apache.batik.util.gui.xmleditor.XMLToken;
 
 import java.util.List;
 import static ch.mjava.intellij.tapestry.OgnlResolver.isOgnlExpression;
-import static ch.mjava.intellij.tapestry.OgnlResolver.cleanOgnlExpression;
+import static ch.mjava.intellij.tapestry.OgnlResolver.separateOgnlExpression;
 
 /**
  * @author knm
@@ -49,12 +49,12 @@ public class PropertyCompletionContributor extends CompletionContributor
 
                             if(isOgnlExpression(textBeforeCaret))
                             {
-                                String toComplete = cleanOgnlExpression(textBeforeCaret);
-                                List<PsiMethod> methodCandidates = OgnlResolver.getMethodsCandidatesFrom(originalFile, toComplete);
+                                String[] expressions = separateOgnlExpression(textBeforeCaret);
+                                List<PsiMethod> methodCandidates = OgnlResolver.getMethodsCandidatesFrom(originalFile, expressions[1]);
                                 for(PsiMethod candidate : methodCandidates)
                                 {
                                     LookupElementBuilder element =
-                                            LookupElementBuilder.create(candidate.getName())
+                                            LookupElementBuilder.create(expressions[0] + candidate.getName())
                                                     .withIcon(StdFileTypes.JAVA.getIcon())
                                                     .withTailText(" " + candidate.getContainingFile().getName(), true)
                                                     .withBoldness(true);

@@ -125,6 +125,7 @@ public class OgnlResolver extends AnAction
         return methodName.contains(lowerFieldName);
     }
 
+    /** could use a model object instead of string[] here but waiting for proper ognl parsing */
     public static String[] separateOgnlExpression(String expression)
     {
         if(!isOgnlExpression(expression))
