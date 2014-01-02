@@ -112,6 +112,7 @@ public class OgnlResolverTest
         assertThat(matches, is(equalTo(false)));
 
     }
+
     @Test
     public void testMethodNameMatchesForBooleanInverse() throws Exception
     {
@@ -125,5 +126,103 @@ public class OgnlResolverTest
 
         // then
         assertThat(matches, is(equalTo(true)));
+    }
+
+    @Test
+    public void testIsOgnlExpressionForAction() throws Exception
+    {
+        // given
+        String withAction = "action:document";
+
+        // when
+        boolean isHit = OgnlResolver.isOgnlExpression(withAction);
+
+        // then
+        assertThat(isHit, is(equalTo(true)));
+    }
+
+    @Test
+    public void testIsOgnlExpressionForListener() throws Exception
+    {
+        // given
+        String withListener = "listener:document";
+
+        // when
+        boolean isHit = OgnlResolver.isOgnlExpression(withListener);
+
+        // then
+        assertThat(isHit, is(equalTo(true)));
+    }
+
+    @Test
+    public void testIsOgnlExpressionForOgnl() throws Exception
+    {
+        // given
+        String withOgnl = "ognl:document";
+
+        // when
+        boolean isHit = OgnlResolver.isOgnlExpression(withOgnl);
+
+        // then
+        assertThat(isHit, is(equalTo(true)));
+    }
+
+    @Test
+    public void testCleanReturnPrefixAndRest() throws Exception
+    {
+        // given
+        String expression = "ognl:document";
+
+        // when
+        String[] splitted = OgnlResolver.separateOgnlExpression(expression);
+
+        // then
+        assertThat(splitted.length, is(equalTo(2)));
+        assertThat(splitted[0], is(equalTo("ognl:")));
+        assertThat(splitted[1], is(equalTo("document")));
+    }
+
+    @Test
+    public void testCleanReturnPrefixAndRestForAction() throws Exception
+    {
+        // given
+        String expression = "action:document";
+
+        // when
+        String[] splitted = OgnlResolver.separateOgnlExpression(expression);
+
+        // then
+        assertThat(splitted.length, is(equalTo(2)));
+        assertThat(splitted[0], is(equalTo("action:")));
+        assertThat(splitted[1], is(equalTo("document")));
+    }
+
+    @Test
+    public void testCleanReturnPrefixAndRestForListener() throws Exception
+    {
+        // given
+        String expression = "listener:document";
+
+        // when
+        String[] splitted = OgnlResolver.separateOgnlExpression(expression);
+
+        // then
+        assertThat(splitted.length, is(equalTo(2)));
+        assertThat(splitted[0], is(equalTo("listener:")));
+        assertThat(splitted[1], is(equalTo("document")));
+    }
+
+    @Test
+    public void testCleanReturnPrefixAndrestHandlesNoOgnle() throws Exception
+    {
+        // given
+        String expression = "document";
+
+        // when
+        String[] splitted = OgnlResolver.separateOgnlExpression(expression);
+
+        // then
+        assertThat(splitted.length, is(equalTo(1)));
+        assertThat(splitted[0], is(equalTo("document")));
     }
 }

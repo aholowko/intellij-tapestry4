@@ -53,7 +53,7 @@ public class OgnlResolver extends AnAction
             PsiElement elementAt = psiFile.findElementAt(offset);
             String text = elementAt.getText();
 
-            if(text.contains("ognl:") || text.contains("listener:"))
+            if(isOgnlExpression(text))
             {
                 String ognlExpression = cleanOgnlExpression(text);
                 List<PsiMethod> allFields = getMethodsCandidatesFrom(psiFile, ognlExpression);
@@ -71,6 +71,11 @@ public class OgnlResolver extends AnAction
 
 
         }
+    }
+
+    public static boolean isOgnlExpression(String text)
+    {
+        return text.contains("ognl:") || text.contains("listener:") || text.contains("action:");
     }
 
     public static String cleanOgnlExpression(String ognlExpression)
@@ -118,5 +123,16 @@ public class OgnlResolver extends AnAction
                 .replaceAll("!", "");
         String methodName = method.getName().toLowerCase();
         return methodName.contains(lowerFieldName);
+    }
+
+    public static String[] separateOgnlExpression(String expression)
+    {
+        if(!isOgnlExpression(expression))
+        {
+            return new String[]{ expression };
+        }
+
+        String[] keeper = expression.split(":");
+        return new String[]{ keeper[0] + ":", keeper[1] };
     }
 }
