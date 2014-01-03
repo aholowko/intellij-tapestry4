@@ -213,7 +213,7 @@ public class OgnlResolverTest
     }
 
     @Test
-    public void testCleanReturnPrefixAndrestHandlesNoOgnle() throws Exception
+    public void testCleanReturnPrefixAndRestHandlesNoOgnl() throws Exception
     {
         // given
         String expression = "document";
@@ -224,5 +224,20 @@ public class OgnlResolverTest
         // then
         assertThat(splitted.length, is(equalTo(1)));
         assertThat(splitted[0], is(equalTo("document")));
+    }
+
+    @Test
+    public void testCleanReturnPrefixAndrestHandlesEmptyOgnle() throws Exception
+    {
+        // given
+        String expression = "ognl:";
+
+        // when
+        String[] splitted = OgnlResolver.separateOgnlExpression(expression);
+
+        // then
+        assertThat(splitted.length, is(equalTo(2)));
+        assertThat(splitted[0], is(equalTo("ognl:")));
+        assertThat(splitted[1], is(equalTo("")));
     }
 }

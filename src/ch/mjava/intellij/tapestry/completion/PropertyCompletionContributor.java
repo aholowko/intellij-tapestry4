@@ -33,7 +33,6 @@ public class PropertyCompletionContributor extends CompletionContributor
             @Override
             public void run()
             {
-                result.addElement(LookupElementBuilder.create("ognl:documentParXX"));
                 PsiFile originalFile = parameters.getOriginalFile();
                 if(originalFile.getFileType() == StdFileTypes.HTML)
                 {

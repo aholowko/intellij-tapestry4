@@ -134,6 +134,7 @@ public class OgnlResolver extends AnAction
         }
 
         String[] keeper = expression.split(":");
-        return new String[]{ keeper[0] + ":", keeper[1] };
+        String tail = keeper.length < 2 ? "" : keeper[1];
+        return new String[]{ keeper[0] + ":", tail };
     }
 }
