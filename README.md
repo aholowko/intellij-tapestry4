@@ -12,6 +12,7 @@ To install the latest release (and get automatic updates), install this plugin u
 * `Ctrl-Alt-Shift J` Switching back and forth between page- and component classes and their markup partners
 * `Ctrl-Alt-Shift K` Place cursor on a ognl expression in the markup and switch to its associated java code
 * Navigatable Linemarker Info in the markup with a clickable link that takes you to the associated java code
+* raw code completion
 
 ## TODO and Wishlist
 
