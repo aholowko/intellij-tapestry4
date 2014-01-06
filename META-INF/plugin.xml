@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>ch.mjava.intellij.tapestry.4</id>
   <name>Tapestry 4.1 Support</name>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <vendor email="intellij.tapestry4@gmail.com" url="http://www.mjava.ch">http://www.mjava.ch</vendor>
 
   <description><![CDATA[
@@ -13,10 +13,13 @@
       ]]></description>
 
   <change-notes><![CDATA[
-    - Switching between between html components and it's java counterparts <i>control alt shift J</i>
-    - Allows to navigate from a ognl expression to its java counterpart <i>control alt shift K</i>
-    - Add LineMarker in html site allowing to switch to java counterpart.
-      ]]>
+  <ul>
+  <li>Switching between between html components and it's java counterparts <i>control alt shift J</i></li>
+  <li>Allows to navigate from a ognl expression to its java counterpart <i>control alt shift K</i></li>
+  <li>Add LineMarker in html site allowing to switch to java counterpart.</li>
+  <li>basic code completion</li>
+  </ul>
+  ]]>
   </change-notes>
 
   <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
