@@ -52,18 +52,22 @@ public class TapestryMarkupLineMarkerProvider implements LineMarkerProvider
     @Override
     public LineMarkerInfo getLineMarkerInfo(@NotNull PsiElement element)
     {
-        if(element instanceof XmlAttribute && ((XmlAttribute) element).getValue().startsWith("ognl"))
-        {
-            XmlAttribute attribute = (XmlAttribute) element;
-            String methodName = OgnlResolver.cleanOgnlExpression(attribute.getValue());
-            List<PsiMethod> methods = OgnlResolver.getMethodsCandidatesFrom(element.getContainingFile(), methodName);
-            List<NavigatablePsiElement> linksTo = new ArrayList<NavigatablePsiElement>();
-            for(PsiMethod method : methods)
-            {
-                linksTo.add(method);
-            }
 
-            return createNavigableLineMarker(element, linksTo);
+        if(element instanceof XmlAttribute && ((XmlAttribute) element).getValue() != null)
+        {
+            String text = ((XmlAttribute) element).getValue();
+            if(OgnlResolver.isOgnlExpression(text))
+            {
+                XmlAttribute attribute = (XmlAttribute) element;
+                String methodName = OgnlResolver.cleanOgnlExpression(attribute.getValue());
+                List<PsiMethod> methods = OgnlResolver.getMethodsCandidatesFrom(element.getContainingFile(), methodName);
+                List<NavigatablePsiElement> linksTo = new ArrayList<NavigatablePsiElement>();
+                for(PsiMethod method : methods)
+                {
+                    linksTo.add(method);
+                }
+                return createNavigableLineMarker(element, linksTo);
+            }
         }
         return null;
     }

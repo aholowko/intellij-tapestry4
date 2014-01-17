@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>ch.mjava.intellij.tapestry.4</id>
   <name>Tapestry 4.1 Support</name>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <vendor email="intellij.tapestry4@gmail.com" url="http://www.mjava.ch">http://www.mjava.ch</vendor>
 
   <description><![CDATA[
@@ -13,6 +13,13 @@
       ]]></description>
 
   <change-notes><![CDATA[
+  <h3>Version 0.1.2</h3>
+  <ul>
+    <li>Fix for reported Nullpointer in LineMarker</li>
+    <li>Line Marker should catch also ':listener' and ':action'</li>
+  </ul>
+
+  <h3>Version 0.1.1</h3>
   <ul>
   <li>Switching between between html components and it's java counterparts <i>control alt shift J</i></li>
   <li>Allows to navigate from a ognl expression to its java counterpart <i>control alt shift K</i></li>
