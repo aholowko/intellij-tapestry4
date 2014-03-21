@@ -8,9 +8,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.*;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.PsiShortNamesCache;
 
 import java.util.ArrayList;
@@ -39,8 +41,7 @@ public class OgnlResolver extends AnAction
     public void actionPerformed(AnActionEvent e)
     {
         PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-        FileType fileType = psiFile.getFileType();
-        if(fileType.getDefaultExtension().equals("html"))
+        if(psiFile != null && psiFile.getFileType().getDefaultExtension().equals("html"))
         {
             String name = psiFile.getName();
             Editor editor = e.getData(PlatformDataKeys.EDITOR);
