@@ -5,7 +5,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.PsiShortNamesCache;
-import pl.holowko.intellij.tapestry.partner.PartnerClassFinder;
+import pl.holowko.intellij.tapestry.partner.PartnerElementFinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class OgnlResolver {
     }
 
     public static List<PsiMethod> getMethodsCandidatesFrom(PsiFile psiFile, String ognlExpression) {
-        List<PsiFile> javaCandidates = PartnerClassFinder.forFile(psiFile).find();
+        List<PsiFile> javaCandidates = PartnerElementFinder.forFile(psiFile).findPartnerFiles();
         List<PsiMethod> allFields = new ArrayList<PsiMethod>();
         Project project = psiFile.getProject();
         PsiShortNamesCache psiShortNamesCache = PsiShortNamesCache.getInstance(project);

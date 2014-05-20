@@ -5,9 +5,9 @@ import com.intellij.psi.PsiFile;
 import static pl.holowko.intellij.tapestry.util.PsiFileUtils.HTML_EXT;
 import static pl.holowko.intellij.tapestry.util.PsiFileUtils.JAVA_EXT;
 
-public class JavaPartnerClassFinder extends PartnerClassFinder {
+public class JavaPartnerElementFinder extends PartnerElementFinder {
 
-    /*package*/ JavaPartnerClassFinder(PsiFile file) {
+    /*package*/ JavaPartnerElementFinder(PsiFile file) {
         super(file);
     }
 

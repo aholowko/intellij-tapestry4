@@ -16,7 +16,7 @@ public class OgnlParser {
     private String expression;
 
     public OgnlParser(String expression) {
-        checkState(expression.startsWith(OGNL_PREFIX) || expression.startsWith(LISTENER_PREFIX) || expression.startsWith(ACTION_PREFIX));
+        checkState(isOgnlExpression(expression), "Expression %s is not valid OGNL expression", expression);
         this.expression = expression.replace(OGNL_PREFIX, "").replace(LISTENER_PREFIX, "").replace(ACTION_PREFIX, "");
     }
 
@@ -34,7 +34,7 @@ public class OgnlParser {
     }
     
     public static boolean isOgnlExpression(String text) {
-        return text.contains(OGNL_PREFIX) || text.contains(LISTENER_PREFIX) || text.contains(ACTION_PREFIX);
+        return text.startsWith(OGNL_PREFIX) || text.startsWith(LISTENER_PREFIX) || text.startsWith(ACTION_PREFIX);
     }
 
     private List<OgnlNode> createNodes(Node node) {
@@ -43,6 +43,8 @@ public class OgnlParser {
         for (Node leafNode : leafNodes) {
             if (leafNode instanceof ASTConst) {
                 builder.add(new OgnlConstNode(((ASTConst) leafNode)));
+            } else if (leafNode instanceof ASTMethod) {
+                builder.add(new OgnlMethodNode((ASTMethod) leafNode));
             }
         }
         return builder.build();

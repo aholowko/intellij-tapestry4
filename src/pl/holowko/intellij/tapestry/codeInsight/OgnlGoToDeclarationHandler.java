@@ -11,7 +11,7 @@ import com.intellij.psi.PsiMethod;
 import org.jetbrains.annotations.Nullable;
 import pl.holowko.intellij.tapestry.ognl.OgnlMethodFinder;
 import pl.holowko.intellij.tapestry.ognl.OgnlParser;
-import pl.holowko.intellij.tapestry.partner.PartnerClassFinder;
+import pl.holowko.intellij.tapestry.partner.PartnerElementFinder;
 
 import java.util.List;
 
@@ -27,9 +27,9 @@ public class OgnlGoToDeclarationHandler implements GotoDeclarationHandler {
             
             if (OgnlParser.isOgnlExpression(text)) {
                 
-                PartnerClassFinder partnerClassFinder = PartnerClassFinder.forFile(containingFile);
-                List<PsiFile> partnerFiles = partnerClassFinder.find();
-                
+                PartnerElementFinder partnerElementFinder = PartnerElementFinder.forFile(containingFile);
+                List<PsiFile> partnerFiles = partnerElementFinder.findPartnerFiles();
+
                 List<PsiMethod> methods = Lists.newArrayList();
                 for (PsiFile partnerFile : partnerFiles) {
                     OgnlMethodFinder ognlMethodFinder = new OgnlMethodFinder(partnerFile, text);

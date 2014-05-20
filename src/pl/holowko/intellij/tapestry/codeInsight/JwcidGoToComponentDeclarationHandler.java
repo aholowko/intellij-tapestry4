@@ -1,7 +1,6 @@
 package pl.holowko.intellij.tapestry.codeInsight;
 
 import ch.mjava.intellij.PluginHelper;
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandler;
@@ -11,20 +10,22 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.search.PsiShortNamesCache;
 import org.jetbrains.annotations.Nullable;
 import pl.holowko.intellij.tapestry.util.JavaPsiUtil;
+import pl.holowko.intellij.tapestry.util.PsiElementFunctions;
+import pl.holowko.intellij.tapestry.util.PsiElementPredicates;
 
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static pl.holowko.intellij.tapestry.util.PsiElementFunctions.classesFromFile;
+import static pl.holowko.intellij.tapestry.util.PsiElementPredicates.instanceOfTapestryComponent;
 import static pl.holowko.intellij.tapestry.util.PsiFileUtils.JAVA_EXT;
 import static pl.holowko.intellij.tapestry.util.PsiFileUtils.isHtmlFile;
 
 public class JwcidGoToComponentDeclarationHandler implements GotoDeclarationHandler {
 
     public static final String AT = "@";
-    public static final String TAPESTRY_COMPONENT_CLASS_NAME = "org.apache.tapestry.internal.Component";
 
     @Override
     public PsiElement[] getGotoDeclarationTargets(PsiElement psiElement, int i, Editor editor) {
@@ -40,8 +41,8 @@ public class JwcidGoToComponentDeclarationHandler implements GotoDeclarationHand
     private List<PsiClass> findComponentClass(String componentName, Project project) {
         List<PsiFile> psiFiles = PluginHelper.searchFiles(componentName, project);
         return FluentIterable.from(psiFiles)
-                .transformAndConcat(PsiClassesFromPsiFileFunction.INSTANCE).
-                filter(TapestryComponentClassesPredicate.INSTANCE)
+                .transformAndConcat(classesFromFile())
+                .filter(instanceOfTapestryComponent())
                 .toList();
     }
 
@@ -59,27 +60,5 @@ public class JwcidGoToComponentDeclarationHandler implements GotoDeclarationHand
     @Override
     public String getActionText(DataContext dataContext) {
         return null;
-    }
-    
-    private enum PsiClassesFromPsiFileFunction implements Function<PsiFile, Iterable<PsiClass>> {
-        INSTANCE;
-
-        @Override
-        public Iterable<PsiClass> apply(PsiFile file) {
-            PsiShortNamesCache psiShortNamesCache = PsiShortNamesCache.getInstance(file.getProject());
-                PsiClass[] classes = psiShortNamesCache.getClassesByName(file.getVirtualFile().getNameWithoutExtension(), file.getResolveScope());
-                return newArrayList(classes);
-        }
-
-    }
-    
-    private enum TapestryComponentClassesPredicate implements Predicate<PsiClass> {
-        INSTANCE;
-
-        @Override
-        public boolean apply(PsiClass psiClass) {
-            return JavaPsiUtil.isInstanceOf(psiClass, TAPESTRY_COMPONENT_CLASS_NAME);
-        }
-
     }
 }

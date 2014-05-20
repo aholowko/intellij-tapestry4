@@ -5,23 +5,22 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.psi.PsiFile;
-import pl.holowko.intellij.tapestry.partner.PartnerClassFinder;
+import com.intellij.psi.PsiElement;
+import pl.holowko.intellij.tapestry.partner.PartnerElementFinder;
 
 import java.util.List;
 
 public class TapestrySwitcher extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
-        PartnerClassFinder partnerClassFinder = PartnerClassFinder.forFile(e.getData(LangDataKeys.PSI_FILE));
-        List<PsiFile> partnerFiles = partnerClassFinder.find();
-
-        if (partnerFiles.isEmpty()) {
+        PartnerElementFinder partnerElementFinder = PartnerElementFinder.forFile(e.getData(LangDataKeys.PSI_FILE));
+        List<? extends PsiElement> partnerElements = partnerElementFinder.findPartnerElements();
+        if (partnerElements.isEmpty()) {
             PluginHelper.showErrorBalloonWith("No partner file found", e.getDataContext());
         } else {
             FileEditorManager fileEditorManager = FileEditorManager.getInstance(e.getProject());
-            for (PsiFile file : partnerFiles) {
-                fileEditorManager.openFile(file.getVirtualFile(), true, true);
+            for (PsiElement element : partnerElements) {
+                fileEditorManager.openFile(element.getContainingFile().getVirtualFile(), true, true);
             }
         }
     }

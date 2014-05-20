@@ -1,10 +1,13 @@
 package pl.holowko.intellij.tapestry.partner;
 
 import ch.mjava.intellij.PluginHelper;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import pl.holowko.intellij.tapestry.util.PsiElementFunctions;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -12,13 +15,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.google.common.base.Predicates.or;
+import static pl.holowko.intellij.tapestry.util.PsiElementFunctions.classesFromFile;
+import static pl.holowko.intellij.tapestry.util.PsiElementPredicates.instanceOfTapestryComponent;
+import static pl.holowko.intellij.tapestry.util.PsiElementPredicates.instanceOfTapestryPage;
 import static pl.holowko.intellij.tapestry.util.PsiFileUtils.HTML_EXT;
 import static pl.holowko.intellij.tapestry.util.PsiFileUtils.JAVA_EXT;
 import static pl.holowko.intellij.tapestry.util.PsiFileUtils.JWC_EXT;
 
-public class HtmlPartnerClassFinder extends PartnerClassFinder {
+public class HtmlPartnerElementFinder extends PartnerElementFinder {
 
-    /*package*/ HtmlPartnerClassFinder(PsiFile file) {
+    /*package*/ HtmlPartnerElementFinder(PsiFile file) {
         super(file);
     }
 
@@ -28,14 +35,25 @@ public class HtmlPartnerClassFinder extends PartnerClassFinder {
     }
 
     @Override
-    public List<PsiFile> find() {
-        List<PsiFile> partnerFiles = super.find();
+    public List<? extends PsiElement> findPartnerElements() {
+        List<PsiFile> partnerFiles = getPartnerFilesByName();
         if (partnerFiles.isEmpty()) {
             List<PsiFile> partnerFilesFromJwcFiles = findFromJwcFiles();
             return ImmutableList.copyOf(partnerFilesFromJwcFiles);
         } else {
-            return partnerFiles;
+            return FluentIterable.from(partnerFiles)
+                    .transformAndConcat(classesFromFile())
+                    .filter(or(instanceOfTapestryComponent(), instanceOfTapestryPage()))
+                    .toList();
         }
+    }
+
+    @Override
+    public List<PsiFile> findPartnerFiles() {
+        List<? extends PsiElement> partnerElements = findPartnerElements();
+        return FluentIterable.from(partnerElements)
+                .transform(PsiElementFunctions.fileForElement())
+                .toList();
     }
 
     private List<PsiFile> findFromJwcFiles() {
