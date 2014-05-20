@@ -1,19 +1,11 @@
 package ch.mjava.intellij.tapestry;
 
-import ch.mjava.intellij.FieldChoiceDialog;
-import ch.mjava.intellij.PluginHelper;
-import com.intellij.codeInsight.navigation.NavigationUtil;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.PsiShortNamesCache;
+import pl.holowko.intellij.tapestry.partner.PartnerClassFinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,77 +27,26 @@ import java.util.List;
  *
  * @author knm
  */
-public class OgnlResolver extends AnAction
-{
-    @Override
-    public void actionPerformed(AnActionEvent e)
-    {
-        PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-        if(psiFile != null && psiFile.getFileType().getDefaultExtension().equals("html"))
-        {
-            String name = psiFile.getName();
-            Editor editor = e.getData(PlatformDataKeys.EDITOR);
-            if(editor == null)
-            {
-                PluginHelper.showErrorBalloonWith("no internal editor found for " + name, e.getDataContext());
-                return;
-            }
-            int offset = editor.getCaretModel().getOffset();
-            PsiElement elementAt = psiFile.findElementAt(offset);
-            String text = elementAt.getText();
-
-            if(isOgnlExpression(text))
-            {
-                String ognlExpression = cleanOgnlExpression(text);
-                List<PsiMethod> allFields = getMethodsCandidatesFrom(psiFile, ognlExpression);
-                FieldChoiceDialog dlg = new FieldChoiceDialog(psiFile.getProject(), allFields.toArray(new PsiMethod[allFields.size()]));
-                dlg.show();
-                if(dlg.isOK())
-                {
-                    List<PsiMethod> methods = dlg.getFields();
-                    for(PsiMethod method : methods)
-                    {
-                        NavigationUtil.activateFileWithPsiElement(method);
-                    }
-                }
-            }
+public class OgnlResolver {
 
 
-        }
-    }
-
-    public static boolean isOgnlExpression(String text)
-    {
+    public static boolean isOgnlExpression(String text) {
         return text.contains("ognl:") || text.contains("listener:") || text.contains("action:");
     }
 
-    public static String cleanOgnlExpression(String ognlExpression)
-    {
-        return ognlExpression.replace("ognl:", "").replace("listener:", "")
-                .replace("(", "")
-                .replace(")", "")
-                .replace("!", "");
-    }
-
-    public static List<PsiMethod> getMethodsCandidatesFrom(PsiFile psiFile, String ognlExpression)
-    {
-        List<PsiFile> javaCandidates = TapestrySwitcher.getPartnerFiles(psiFile);
+    public static List<PsiMethod> getMethodsCandidatesFrom(PsiFile psiFile, String ognlExpression) {
+        List<PsiFile> javaCandidates = PartnerClassFinder.forFile(psiFile).find();
         List<PsiMethod> allFields = new ArrayList<PsiMethod>();
         Project project = psiFile.getProject();
         PsiShortNamesCache psiShortNamesCache = PsiShortNamesCache.getInstance(project);
-        for(PsiFile javaCandidate : javaCandidates)
-        {
+        for (PsiFile javaCandidate : javaCandidates) {
             PsiClass[] classes = psiShortNamesCache.getClassesByName(javaCandidate.getVirtualFile().getNameWithoutExtension(), javaCandidate.getResolveScope());
 
-            if(classes.length > 0)
-            {
-                for(PsiClass aClass : classes)
-                {
+            if (classes.length > 0) {
+                for (PsiClass aClass : classes) {
                     PsiMethod[] methods = aClass.getAllMethods();
-                    for(PsiMethod method : methods)
-                    {
-                        if(methodNameMatches(ognlExpression, method))
-                        {
+                    for (PsiMethod method : methods) {
+                        if (methodNameMatches(ognlExpression, method)) {
                             allFields.add(method);
                         }
                     }
@@ -115,8 +56,7 @@ public class OgnlResolver extends AnAction
         return allFields;
     }
 
-    public static boolean methodNameMatches(String fieldName, PsiMethod method)
-    {
+    public static boolean methodNameMatches(String fieldName, PsiMethod method) {
         // TODO: we could use a proper ognl parsing here!
         String lowerFieldName = fieldName.toLowerCase()
                 .replaceAll("\\(", "")
@@ -126,16 +66,16 @@ public class OgnlResolver extends AnAction
         return methodName.contains(lowerFieldName);
     }
 
-    /** could use a model object instead of string[] here but waiting for proper ognl parsing */
-    public static String[] separateOgnlExpression(String expression)
-    {
-        if(!isOgnlExpression(expression))
-        {
-            return new String[]{ expression };
+    /**
+     * could use a model object instead of string[] here but waiting for proper ognl parsing
+     */
+    public static String[] separateOgnlExpression(String expression) {
+        if (!isOgnlExpression(expression)) {
+            return new String[]{expression};
         }
 
         String[] keeper = expression.split(":");
         String tail = keeper.length < 2 ? "" : keeper[1];
-        return new String[]{ keeper[0] + ":", tail };
+        return new String[]{keeper[0] + ":", tail};
     }
 }

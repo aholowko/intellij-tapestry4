@@ -1,71 +1,72 @@
 <idea-plugin version="2">
-  <id>ch.mjava.intellij.tapestry.4</id>
-  <name>Tapestry 4.1 Support</name>
-  <version>0.1.2</version>
-  <vendor email="intellij.tapestry4@gmail.com" url="http://www.mjava.ch">http://www.mjava.ch</vendor>
+    <id>pl.holowko.tapestry.4</id>
+    <name>Tapestry 4.1</name>
+    <version>0.3</version>
+    <vendor url="https://github.com/aholowko/intellij-tapestry4">Andrzej Hołowko</vendor>
 
-  <description><![CDATA[
-      <h1>Tapestry 4 Support</h1>
+    <description>
+    <![CDATA[
+    <h1>Tapestry 4.1</h1>
+    
+    Basic tapestry 4.1 support.
+    
+    ]]>
+    </description>
 
-      Very simple plugin that provides some basic tapestry support.<br />
-      It is intended to support development for tapestry 4 projects.
+    <change-notes>
+    <![CDATA[
+        
+    <h3>Version 0.3</h3>
+    <ul>
+    <li>HTML - Go to component class for jwcid arguments</li>
+    </ul>
+    
+    <h3>Version 0.2</h3>
+    <ul>
+    <li>HTML - Go to declaration for ognl expressioms</li>
+    </ul>
+    
+    <h3>Version 0.1</h3>
+    <ul>
+    <li>Forked from https://github.com/linuxswords/intellij-tapestry4</li>
+    </ul>
+    
+    ]]>
+    </change-notes>
 
-      ]]></description>
+    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="107.105"/>
 
-  <change-notes><![CDATA[
-  <h3>Version 0.1.2</h3>
-  <ul>
-    <li>Fix for reported Nullpointer in LineMarker</li>
-    <li>Line Marker should catch also ':listener' and ':action'</li>
-  </ul>
+    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+    on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
 
-  <h3>Version 0.1.1</h3>
-  <ul>
-  <li>Switching between between html components and it's java counterparts <i>control alt shift J</i></li>
-  <li>Allows to navigate from a ognl expression to its java counterpart <i>control alt shift K</i></li>
-  <li>Add LineMarker in html site allowing to switch to java counterpart.</li>
-  <li>basic code completion</li>
-  </ul>
-  ]]>
-  </change-notes>
+    <application-components>
+        <!-- Add your application components here -->
+    </application-components>
 
-  <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
-  <idea-version since-build="107.105"/>
+    <project-components>
+        <!-- Add your project components here -->
+    </project-components>
 
-  <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
+    <actions>
+        <action id="switcher" class="pl.holowko.intellij.tapestry.TapestrySwitcher" text="Switch Tapestry Html-Java Files"
+                description="Switch Between Html Pages/Components and their Java-CounterParts">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <keyboard-shortcut first-keystroke="control alt shift L" keymap="$default"/>
+        </action>
 
-  <application-components>
-    <!-- Add your application components here -->
-  </application-components>
+    </actions>
 
-  <project-components>
-    <!-- Add your project components here -->
-  </project-components>
+    <extensions defaultExtensionNs="com.intellij">
 
-  <actions>
-    <action id="switcher" class="ch.mjava.intellij.tapestry.TapestrySwitcher" text="Switch Tapestry Html-Java Files"
-            description="Switch Between Html Pages/Components and their Java-CounterParts">
-      <add-to-group group-id="ToolsMenu" anchor="last"/>
-      <keyboard-shortcut first-keystroke="control alt shift J" keymap="$default"/>
-    </action>
+        <completion.contributor language="HTML"
+                                implementationClass="ch.mjava.intellij.tapestry.completion.PropertyCompletionContributor"/>
 
-    <action id="ognlResolver" class="ch.mjava.intellij.tapestry.OgnlResolver" text="got to refered ognl action"
-            description="Switches to implemented ognl call">
-      <add-to-group group-id="ToolsMenu" anchor="last"/>
-      <keyboard-shortcut first-keystroke="control alt shift K" keymap="$default"/>
-    </action>
+        <gotoDeclarationHandler implementation="pl.holowko.intellij.tapestry.codeInsight.JwcidGoToComponentDeclarationHandler"/>
+        <gotoDeclarationHandler implementation="pl.holowko.intellij.tapestry.codeInsight.OgnlGoToDeclarationHandler"/>
 
-  </actions>
-
-  <extensions defaultExtensionNs="com.intellij">
-
-    <completion.contributor language="HTML" implementationClass="ch.mjava.intellij.tapestry.completion.PropertyCompletionContributor"/>
-
-    <codeInsight.lineMarkerProvider language="HTML"
-                                    implementationClass="ch.mjava.intellij.tapestry.codeInsight.TapestryMarkupLineMarkerProvider"/>
-  </extensions>
+    </extensions>
 </idea-plugin>
