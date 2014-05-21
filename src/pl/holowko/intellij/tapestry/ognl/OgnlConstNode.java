@@ -4,8 +4,11 @@ import com.google.common.base.Ascii;
 import com.google.common.collect.ImmutableSet;
 import com.intellij.psi.PsiMethod;
 import ognl.ASTConst;
+import pl.holowko.intellij.tapestry.util.Utils;
 
 import java.util.Set;
+
+import static pl.holowko.intellij.tapestry.util.Utils.firstCharToUpper;
 
 public class OgnlConstNode implements OgnlNode {
 
@@ -25,7 +28,13 @@ public class OgnlConstNode implements OgnlNode {
         String methodName = method.getName();
         return possibleMethodNames.contains(methodName);
     }
-    
+
+    @Override
+    public boolean candidates(PsiMethod method) {
+        String methodName = method.getName();
+        return methodName.toLowerCase().contains(name().toLowerCase());
+    }
+
     private String name() {
         return property.toString().replaceAll("\"", "");
     }
@@ -38,12 +47,5 @@ public class OgnlConstNode implements OgnlNode {
         return IS_PREFIX + firstCharToUpper(name());
     }
     
-    private static String firstCharToUpper(String word) {
-    return (word.isEmpty())
-        ? word
-        : new StringBuilder(word.length())
-            .append(Ascii.toUpperCase(word.charAt(0)))
-            .append(word.substring(1))
-            .toString();
-  }
+    
 }

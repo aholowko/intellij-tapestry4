@@ -33,7 +33,7 @@ public class OgnlGoToDeclarationHandler implements GotoDeclarationHandler {
                 List<PsiMethod> methods = Lists.newArrayList();
                 for (PsiFile partnerFile : partnerFiles) {
                     OgnlMethodFinder ognlMethodFinder = new OgnlMethodFinder(partnerFile, text);
-                    methods.addAll(ognlMethodFinder.find());
+                    methods.addAll(ognlMethodFinder.findAll());
                 }
                 return methods.toArray(new PsiElement[methods.size()]);
             }

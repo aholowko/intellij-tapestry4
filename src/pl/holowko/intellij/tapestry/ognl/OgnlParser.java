@@ -1,11 +1,14 @@
 package pl.holowko.intellij.tapestry.ognl;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import ognl.*;
 
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Iterables.getLast;
 
 public class OgnlParser {
 
@@ -14,10 +17,33 @@ public class OgnlParser {
     public static final String ACTION_PREFIX = "action:";
 
     private String expression;
+    private String prefix;
 
-    public OgnlParser(String expression) {
-        checkState(isOgnlExpression(expression), "Expression %s is not valid OGNL expression", expression);
-        this.expression = expression.replace(OGNL_PREFIX, "").replace(LISTENER_PREFIX, "").replace(ACTION_PREFIX, "");
+    public OgnlParser(String rawExpression) {
+        checkState(isOgnlExpression(rawExpression), "Expression %s is not valid OGNL expression", rawExpression);
+        
+        this.expression = findOgnlExpression(rawExpression);
+        this.prefix = findPrefix(rawExpression);
+    }
+
+    private String findOgnlExpression(String rawExpression) {
+        return rawExpression.replace(OGNL_PREFIX, "").replace(LISTENER_PREFIX, "").replace(ACTION_PREFIX, "");
+    }
+
+    private String findPrefix(String rawExpression) {
+        if (isOgnl(rawExpression)) {
+            return OGNL_PREFIX;
+        } else if (isListener(rawExpression)) {
+            return LISTENER_PREFIX;
+        } else if (isAction(rawExpression)) {
+            return ACTION_PREFIX;
+        } else {
+            throw new IllegalStateException("Unsuported ognl prefix in text" + rawExpression);
+        }
+    }
+
+    public String getPrefix() {
+        return prefix;
     }
 
     public List<OgnlNode> findNodes() {
@@ -33,8 +59,24 @@ public class OgnlParser {
         return builder.build();
     }
     
+    public Optional<OgnlNode> tryFindLastNode() {
+        return Optional.fromNullable(getLast(findNodes()));
+    }
+    
     public static boolean isOgnlExpression(String text) {
-        return text.startsWith(OGNL_PREFIX) || text.startsWith(LISTENER_PREFIX) || text.startsWith(ACTION_PREFIX);
+        return isOgnl(text) || isListener(text) || isAction(text);
+    }
+
+    private static boolean isAction(String text) {
+        return text.startsWith(ACTION_PREFIX);
+    }
+
+    private static boolean isListener(String text) {
+        return text.startsWith(LISTENER_PREFIX);
+    }
+
+    private static boolean isOgnl(String text) {
+        return text.startsWith(OGNL_PREFIX);
     }
 
     private List<OgnlNode> createNodes(Node node) {

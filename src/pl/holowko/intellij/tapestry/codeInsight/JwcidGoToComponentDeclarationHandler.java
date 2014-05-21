@@ -1,7 +1,6 @@
 package pl.holowko.intellij.tapestry.codeInsight;
 
 import ch.mjava.intellij.PluginHelper;
-import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandler;
@@ -11,11 +10,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.Nullable;
-import pl.holowko.intellij.tapestry.util.JavaPsiUtil;
-import pl.holowko.intellij.tapestry.util.PsiElementFunctions;
-import pl.holowko.intellij.tapestry.util.PsiElementPredicates;
 
 import java.util.List;
 

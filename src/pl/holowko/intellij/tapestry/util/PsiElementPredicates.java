@@ -21,7 +21,7 @@ public final class PsiElementPredicates {
 
         @Override
         public boolean apply(PsiClass psiClass) {
-            return JavaPsiUtil.isInstanceOf(psiClass, TAPESTRY_COMPONENT_CLASS_NAME);
+            return JavaPsiUtils.isInstanceOf(psiClass, TAPESTRY_COMPONENT_CLASS_NAME);
         }
 
     }
@@ -31,7 +31,7 @@ public final class PsiElementPredicates {
 
         @Override
         public boolean apply(PsiClass psiClass) {
-            return JavaPsiUtil.isInstanceOf(psiClass, TAPESTRY_PAGE_CLASS_NAME);
+            return JavaPsiUtils.isInstanceOf(psiClass, TAPESTRY_PAGE_CLASS_NAME);
         }
 
     }

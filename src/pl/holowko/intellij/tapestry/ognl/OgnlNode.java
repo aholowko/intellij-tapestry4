@@ -6,4 +6,6 @@ public interface OgnlNode {
     
     boolean matches(PsiMethod method);
     
+    boolean candidates(PsiMethod method);
+    
 }

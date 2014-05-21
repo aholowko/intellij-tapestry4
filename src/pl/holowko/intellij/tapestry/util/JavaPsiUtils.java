@@ -2,7 +2,7 @@ package pl.holowko.intellij.tapestry.util;
 
 import com.intellij.psi.PsiClass;
 
-public class JavaPsiUtil {
+public class JavaPsiUtils {
 
     public static boolean isInstanceOf(PsiClass instance, String interfaceExtendsClassName) {
         String qualifiedName = instance.getQualifiedName();

@@ -12,7 +12,7 @@
     
     ]]>
     </description>
-
+    
     <change-notes>
     <![CDATA[
      
@@ -63,16 +63,12 @@
             <add-to-group group-id="ToolsMenu" anchor="last"/>
             <keyboard-shortcut first-keystroke="control alt shift L" keymap="$default"/>
         </action>
-
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-
-        <completion.contributor language="HTML"
-                                implementationClass="ch.mjava.intellij.tapestry.completion.PropertyCompletionContributor"/>
+        <completion.contributor language="HTML" implementationClass="pl.holowko.intellij.tapestry.completion.PropertyCompletionContributor"/>
 
         <gotoDeclarationHandler implementation="pl.holowko.intellij.tapestry.codeInsight.JwcidGoToComponentDeclarationHandler"/>
         <gotoDeclarationHandler implementation="pl.holowko.intellij.tapestry.codeInsight.OgnlGoToDeclarationHandler"/>
-
     </extensions>
 </idea-plugin>

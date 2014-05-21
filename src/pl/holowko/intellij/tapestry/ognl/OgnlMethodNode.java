@@ -16,4 +16,9 @@ public class OgnlMethodNode implements OgnlNode {
         String methodName = method.getName();
         return methodNode.getMethodName().equals(methodName);
     }
+
+    @Override
+    public boolean candidates(PsiMethod method) {
+        return false;
+    }
 }

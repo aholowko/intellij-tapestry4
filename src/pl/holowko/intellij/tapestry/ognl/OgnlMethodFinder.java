@@ -1,17 +1,23 @@
 package pl.holowko.intellij.tapestry.ognl;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.PsiShortNamesCache;
+import pl.holowko.intellij.tapestry.util.PsiElementFunctions;
 
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Iterables.any;
+import static pl.holowko.intellij.tapestry.util.PsiElementFunctions.candidateMethodNames;
+import static pl.holowko.intellij.tapestry.util.PsiElementFunctions.methodName;
 
 public class OgnlMethodFinder {
     
@@ -19,15 +25,51 @@ public class OgnlMethodFinder {
     final private OgnlParser ognlParser;
     final private List<OgnlNode> ognlNodes;
 
-    public OgnlMethodFinder(PsiFile file, String expression) {
-        checkState(file.getFileType().equals(StdFileTypes.JAVA));
+    public OgnlMethodFinder(PsiFile javaFile, String expression) {
+        checkState(javaFile.getFileType().equals(StdFileTypes.JAVA));
         
-        this.file = file;
+        this.file = javaFile;
         this.ognlParser = new OgnlParser(expression);
         this.ognlNodes = ognlParser.findNodes();
     }
     
-    public List<PsiMethod> find() {
+    public String getExpressionPrefix() {
+        return ognlParser.getPrefix();
+    }
+    
+    private Optional<OgnlNode> getLastOgnlNode() {
+        return Optional.fromNullable(Iterables.getLast(ognlNodes, null));
+    }
+    
+    public List<String> findMethodCandidateNames() {
+        return FluentIterable.from(findMethodCandidates()).transformAndConcat(candidateMethodNames()).toList();
+    }
+    
+    public List<PsiMethod> findMethodCandidates() {
+        ImmutableList.Builder<PsiMethod> builder = ImmutableList.builder();
+        
+        PsiShortNamesCache psiShortNamesCache = PsiShortNamesCache.getInstance(file.getProject());
+        PsiClass[] classes = psiShortNamesCache.getClassesByName(file.getVirtualFile().getNameWithoutExtension(), file.getResolveScope());
+
+        Optional<OgnlNode> lastOgnlNode = getLastOgnlNode();
+
+        for (PsiClass aClass : classes) {
+            PsiMethod[] methods = aClass.getAllMethods();
+            
+            if (lastOgnlNode.isPresent()) {
+                for (PsiMethod method : methods) {
+                    if (lastOgnlNode.get().candidates(method)) {
+                        builder.add(method);
+                    }
+                }
+            } else {
+                builder.add(methods);
+            }
+        }
+        return builder.build();
+    }
+    
+    public List<PsiMethod> findAll() {
         ImmutableList.Builder<PsiMethod> builder = ImmutableList.builder();
 
         PsiShortNamesCache psiShortNamesCache = PsiShortNamesCache.getInstance(file.getProject());
