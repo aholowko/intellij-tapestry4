@@ -3,6 +3,7 @@ package pl.holowko.intellij.tapestry.codeInsight;
 import ch.mjava.intellij.PluginHelper;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
 import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandler;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Editor;
@@ -10,6 +11,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiNamedElement;
 import org.jetbrains.annotations.Nullable;
 import pl.holowko.intellij.tapestry.util.JavaPsiUtil;
 import pl.holowko.intellij.tapestry.util.PsiElementFunctions;
@@ -20,6 +22,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static pl.holowko.intellij.tapestry.util.PsiElementFunctions.classesFromFile;
 import static pl.holowko.intellij.tapestry.util.PsiElementPredicates.instanceOfTapestryComponent;
+import static pl.holowko.intellij.tapestry.util.PsiFileUtils.HTML_EXT;
 import static pl.holowko.intellij.tapestry.util.PsiFileUtils.JAVA_EXT;
 import static pl.holowko.intellij.tapestry.util.PsiFileUtils.isHtmlFile;
 
@@ -31,11 +34,22 @@ public class JwcidGoToComponentDeclarationHandler implements GotoDeclarationHand
     public PsiElement[] getGotoDeclarationTargets(PsiElement psiElement, int i, Editor editor) {
         PsiFile containingFile = psiElement.getContainingFile();
         if (isHtmlFile(containingFile) && isJwcid(psiElement)) {
-            String componentName = getComponentName(psiElement.getText());
-            List<PsiClass> psiClassList = findComponentClass(componentName, psiElement.getProject());
-            return psiClassList.toArray(new PsiElement[psiClassList.size()]);
+            List<PsiFile> htmlComponents = getHtmlComponents(psiElement);
+            List<PsiClass> javaComponents = getJavaComponents(psiElement);
+            Iterable<PsiElement> elements = Iterables.<PsiElement>concat(htmlComponents, javaComponents);
+            return Iterables.toArray(elements, PsiElement.class);
         }
         return new PsiElement[0];
+    }
+
+    private List<PsiFile> getHtmlComponents(PsiElement psiElement) {
+        String componentName = getHtmlComponentName(psiElement.getText());
+        return PluginHelper.searchFiles(componentName, psiElement.getProject());
+    }
+
+    private List<PsiClass> getJavaComponents(PsiElement psiElement) {
+        String componentName = getJavaComponentName(psiElement.getText());
+        return findComponentClass(componentName, psiElement.getProject());
     }
 
     private List<PsiClass> findComponentClass(String componentName, Project project) {
@@ -46,9 +60,17 @@ public class JwcidGoToComponentDeclarationHandler implements GotoDeclarationHand
                 .toList();
     }
 
+    private String getJavaComponentName(String jwcid) {
+        return getComponentName(jwcid) + JAVA_EXT;
+    }
+    
+    private String getHtmlComponentName(String jwcid) {
+        return getComponentName(jwcid) + HTML_EXT;
+    }
+    
     private String getComponentName(String jwcid) {
         int atIndex = jwcid.indexOf(AT);
-        return jwcid.substring(atIndex + 1) + JAVA_EXT;
+        return jwcid.substring(atIndex + 1);
     }
 
     private boolean isJwcid(PsiElement psiElement) {
