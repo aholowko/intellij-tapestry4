@@ -13,10 +13,14 @@ public final class PsiFileUtils {
         return psiFile.getFileType() == StdFileTypes.HTML;
     }
 
-    private PsiFileUtils() {
-    }
-
     public static boolean isJavaFile(PsiFile file) {
         return file.getFileType().equals(StdFileTypes.JAVA);
+    }
+    
+    public static boolean isJwcFile(PsiFile file) {
+        return file.getName().endsWith(JWC_EXT);
+    }
+
+    private PsiFileUtils() {
     }
 }

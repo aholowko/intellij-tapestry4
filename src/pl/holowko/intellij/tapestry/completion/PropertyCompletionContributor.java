@@ -1,5 +1,6 @@
 package pl.holowko.intellij.tapestry.completion;
 
+import com.google.common.base.Optional;
 import com.intellij.codeInsight.completion.CompletionContributor;
 import com.intellij.codeInsight.completion.CompletionInitializationContext;
 import com.intellij.codeInsight.completion.CompletionParameters;
@@ -33,18 +34,21 @@ public class PropertyCompletionContributor extends CompletionContributor {
                 if (isHtmlFile(file) && isXmlAttribute(position)) {
                     String textBeforeCaret = getTextBeforeCaret((XmlToken) position);
                     if (isOgnlExpression(textBeforeCaret)) {
-                        List<PsiFile> partnerFiles = PartnerElementFinder.forFile(file).findPartnerFiles();
-
-                        for (PsiFile partnerFile : partnerFiles) {
-                            OgnlMethodFinder ognlMethodFinder = new OgnlMethodFinder(partnerFile, textBeforeCaret);
-                            
-                            String expressionPrefix = ognlMethodFinder.getExpressionPrefix();
-                            List<String> methodCandidateNames = ognlMethodFinder.findMethodCandidateNames();
-                            
-                            for (String candidateName : methodCandidateNames) {
-                                LookupElementBuilder element = createLookupElement(partnerFile, expressionPrefix, candidateName);
-                                result.addElement(element);
-                                result.stopHere();
+                        Optional<? extends PartnerElementFinder> finder = PartnerElementFinder.forFile(file);
+                        if (finder.isPresent()) {
+                            List<PsiFile> partnerFiles = finder.get().findPartnerFiles();
+    
+                            for (PsiFile partnerFile : partnerFiles) {
+                                OgnlMethodFinder ognlMethodFinder = new OgnlMethodFinder(partnerFile, textBeforeCaret);
+                                
+                                String expressionPrefix = ognlMethodFinder.getExpressionPrefix();
+                                List<String> methodCandidateNames = ognlMethodFinder.findMethodCandidateNames();
+                                
+                                for (String candidateName : methodCandidateNames) {
+                                    LookupElementBuilder element = createLookupElement(partnerFile, expressionPrefix, candidateName);
+                                    result.addElement(element);
+                                    result.stopHere();
+                                }
                             }
                         }
                     }

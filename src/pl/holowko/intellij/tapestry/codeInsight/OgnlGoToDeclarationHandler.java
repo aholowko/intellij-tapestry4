@@ -1,10 +1,10 @@
 package pl.holowko.intellij.tapestry.codeInsight;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.intellij.codeInsight.navigation.actions.GotoDeclarationHandler;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
@@ -15,27 +15,30 @@ import pl.holowko.intellij.tapestry.partner.PartnerElementFinder;
 
 import java.util.List;
 
+import static pl.holowko.intellij.tapestry.util.PsiFileUtils.isHtmlFile;
+
 
 public class OgnlGoToDeclarationHandler implements GotoDeclarationHandler {
     
     @Override
     public PsiElement[] getGotoDeclarationTargets(PsiElement psiElement, int i, Editor editor) {
         PsiFile containingFile = psiElement.getContainingFile();
-        
-        if (containingFile.getFileType() == StdFileTypes.HTML) {
+        if (isHtmlFile(containingFile)) {
             String text = psiElement.getText();
             
             if (OgnlParser.isOgnlExpression(text)) {
-                
-                PartnerElementFinder partnerElementFinder = PartnerElementFinder.forFile(containingFile);
-                List<PsiFile> partnerFiles = partnerElementFinder.findPartnerFiles();
-
-                List<PsiMethod> methods = Lists.newArrayList();
-                for (PsiFile partnerFile : partnerFiles) {
-                    OgnlMethodFinder ognlMethodFinder = new OgnlMethodFinder(partnerFile, text);
-                    methods.addAll(ognlMethodFinder.findAll());
+                Optional<? extends PartnerElementFinder> partnerElementFinder = PartnerElementFinder.forFile(containingFile);
+            
+                if (partnerElementFinder.isPresent()) {
+                    List<PsiFile> partnerFiles = partnerElementFinder.get().findPartnerFiles();
+    
+                    List<PsiMethod> methods = Lists.newArrayList();
+                    for (PsiFile partnerFile : partnerFiles) {
+                        OgnlMethodFinder ognlMethodFinder = new OgnlMethodFinder(partnerFile, text);
+                        methods.addAll(ognlMethodFinder.findAll());
+                    }
+                    return methods.toArray(new PsiElement[methods.size()]);
                 }
-                return methods.toArray(new PsiElement[methods.size()]);
             }
         }
 

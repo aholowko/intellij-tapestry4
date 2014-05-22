@@ -4,16 +4,12 @@ import ch.mjava.intellij.PluginHelper;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import pl.holowko.intellij.tapestry.util.PsiElementFunctions;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.google.common.base.Predicates.or;
 import static pl.holowko.intellij.tapestry.util.PsiElementFunctions.classesFromFile;
@@ -36,7 +32,7 @@ public class HtmlPartnerElementFinder extends PartnerElementFinder {
 
     @Override
     public List<? extends PsiElement> findPartnerElements() {
-        List<PsiFile> partnerFiles = getPartnerFilesByName();
+        List<PsiFile> partnerFiles = findPartnerFilesByName();
         if (partnerFiles.isEmpty()) {
             List<PsiFile> partnerFilesFromJwcFiles = findFromJwcFiles();
             return ImmutableList.copyOf(partnerFilesFromJwcFiles);
@@ -59,24 +55,14 @@ public class HtmlPartnerElementFinder extends PartnerElementFinder {
     private List<PsiFile> findFromJwcFiles() {
         String jwcFileName = file.getName().replace(HTML_EXT, JWC_EXT);
         Project project = file.getProject();
-        List<PsiFile> psiFiles = PluginHelper.searchFiles(jwcFileName, project);
-        if (!psiFiles.isEmpty()) {
+        List<PsiFile> jwcFiles = PluginHelper.searchFiles(jwcFileName, project);
+        
+        if (!jwcFiles.isEmpty()) {
             // looking for files inside jwc files
-            PsiFile jwcCandidate = psiFiles.get(0);
-            VirtualFile jwcFile = jwcCandidate.getVirtualFile();
-            try {
-                String content = new String(jwcFile.contentsToByteArray(), "UTF-8");
-                Pattern pattern = Pattern.compile(".*class=\"(.*?)\"");
-                Matcher matcher = pattern.matcher(content);
-                if (matcher.find()) {
-                    String fqClassName = matcher.group(1);
-                    String javaName = fqClassName.substring(fqClassName.lastIndexOf(".") + 1);
-                    return PluginHelper.searchFiles(javaName + JAVA_EXT, project);
-                }
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            PsiFile jwcFile = jwcFiles.get(0);
+            JwcPartnerElementFinder jwcPartnerElementFinder = new JwcPartnerElementFinder(jwcFile);
+            return jwcPartnerElementFinder.findPartnerFilesFromDefinition();
         }
-        return Collections.emptyList();
+        return Collections.EMPTY_LIST;
     }
 }
