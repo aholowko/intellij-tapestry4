@@ -35,7 +35,7 @@ public class PsiMethodDecorator {
     private String getPropertyName() {
         checkState(isProperty());
         
-        String name = getName().replace(isGetter() ? GET_PREFIX : IS_PREFIX, "");
+        String name = getName().replaceFirst(isGetter() ? GET_PREFIX : IS_PREFIX, "");
         return Utils.firstCharToLower(name);
     }
     

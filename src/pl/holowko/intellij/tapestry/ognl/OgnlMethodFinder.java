@@ -5,19 +5,19 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.PsiShortNamesCache;
-import pl.holowko.intellij.tapestry.util.PsiElementFunctions;
 
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Iterables.any;
 import static pl.holowko.intellij.tapestry.util.PsiElementFunctions.candidateMethodNames;
-import static pl.holowko.intellij.tapestry.util.PsiElementFunctions.methodName;
+import static pl.holowko.intellij.tapestry.util.PsiElementPredicates.publicMethod;
 
 public class OgnlMethodFinder {
     
@@ -46,7 +46,7 @@ public class OgnlMethodFinder {
     }
     
     public List<PsiMethod> findMethodCandidates() {
-        ImmutableList.Builder<PsiMethod> builder = ImmutableList.builder();
+        ImmutableList.Builder<PsiMethod> methodCandidatesBuilder = ImmutableList.builder();
         
         PsiShortNamesCache psiShortNamesCache = PsiShortNamesCache.getInstance(file.getProject());
         PsiClass[] classes = psiShortNamesCache.getClassesByName(file.getVirtualFile().getNameWithoutExtension(), file.getResolveScope());
@@ -55,18 +55,18 @@ public class OgnlMethodFinder {
 
         for (PsiClass aClass : classes) {
             PsiMethod[] methods = aClass.getAllMethods();
-            
+            List<PsiMethod> publicMethods = FluentIterable.from(Lists.newArrayList(methods)).filter(publicMethod()).toList();
             if (lastOgnlNode.isPresent()) {
-                for (PsiMethod method : methods) {
+                for (PsiMethod method : publicMethods) {
                     if (lastOgnlNode.get().candidates(method)) {
-                        builder.add(method);
+                        methodCandidatesBuilder.add(method);
                     }
                 }
             } else {
-                builder.add(methods);
+                methodCandidatesBuilder.addAll(publicMethods);
             }
         }
-        return builder.build();
+        return methodCandidatesBuilder.build();
     }
     
     public List<PsiMethod> findAll() {

@@ -14,12 +14,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static pl.holowko.intellij.tapestry.util.PsiElementFunctions.classesFromFile;
 import static pl.holowko.intellij.tapestry.util.PsiElementPredicates.instanceOfTapestryComponent;
-import static pl.holowko.intellij.tapestry.util.PsiFileUtils.HTML_EXT;
-import static pl.holowko.intellij.tapestry.util.PsiFileUtils.JAVA_EXT;
-import static pl.holowko.intellij.tapestry.util.PsiFileUtils.isHtmlFile;
+import static pl.holowko.intellij.tapestry.util.PsiFileUtils.*;
 
 public class JwcidGoToComponentDeclarationHandler implements GotoDeclarationHandler {
 

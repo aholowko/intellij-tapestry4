@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import pl.holowko.intellij.tapestry.ognl.OgnlMethodFinder;
 import pl.holowko.intellij.tapestry.ognl.OgnlParser;
 import pl.holowko.intellij.tapestry.partner.PartnerElementFinder;
+import pl.holowko.intellij.tapestry.util.PsiFileUtils;
 
 import java.util.List;
 
@@ -31,11 +32,13 @@ public class OgnlGoToDeclarationHandler implements GotoDeclarationHandler {
             
                 if (partnerElementFinder.isPresent()) {
                     List<PsiFile> partnerFiles = partnerElementFinder.get().findPartnerFiles();
-    
+                    
                     List<PsiMethod> methods = Lists.newArrayList();
                     for (PsiFile partnerFile : partnerFiles) {
-                        OgnlMethodFinder ognlMethodFinder = new OgnlMethodFinder(partnerFile, text);
-                        methods.addAll(ognlMethodFinder.findAll());
+                        if (PsiFileUtils.isJavaFile(partnerFile)) {
+                            OgnlMethodFinder ognlMethodFinder = new OgnlMethodFinder(partnerFile, text);
+                            methods.addAll(ognlMethodFinder.findAll());
+                        }
                     }
                     return methods.toArray(new PsiElement[methods.size()]);
                 }
